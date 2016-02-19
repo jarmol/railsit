@@ -16,5 +16,8 @@
 !/log/.keep
 /tmp
 
+/log/
 /config/secrets.yml
+/bower_components/
+/doc/app/
 .DS_Store
