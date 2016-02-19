@@ -140,5 +140,18 @@ Then you make the app/views/articles/show.html.erb
 <%= link_to 'Edit', edit_article_path(@article) %> |
 <%= link_to 'Back', articles_path %>
 ```
- 
+## 8 Deleting Comments
+We need to implement a link of some sort in the view and
+ a destroy action in the CommentsController. 
+ So, let's add the delete link in the
+  app/views/comments/_comment.html.erb partial:
+ ```
+ <p>
+  <%= link_to 'Destroy Comment', [comment.article, comment],
+               method: :delete,
+               data: { confirm: 'Are you sure?' } %>
+</p>
+```
+Add a destroy action to
+ our controller (app/controllers/comments_controller.rb):
  
