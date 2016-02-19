@@ -6,7 +6,7 @@ Ref.: http://guides.rubyonrails.org/getting_started.html#adding-a-second-model
 $ rails new blog
 $ cd blog
 ```
-## 5. Getting Up and Running
+## 5 Getting Up and Running
 ```
 add the article resource to the config/routes.rb as follows:
 Rails.application.routes.draw do
@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   root 'welcome#index'
 end
 ```
-## 6. Second model comments
+## 6 Second model comments
 
 ```
 $ rails generate model Comment commenter:string body:text article:references
@@ -41,14 +41,8 @@ $
 ```
 ### 6.3 Adding a Route for Comments
 
+<code>config/routes.rb</code>:
 ```
-  resources :articles do
-    resources :comments
-  end
-
-routes.rb
----------
-
 Rails.application.routes.draw do
   resources :articles do
     resources :comments
@@ -93,12 +87,13 @@ Create the file app/views/comments/_comment.html.erb and put the following into 
   <strong>Commenter:</strong>
   <%= comment.commenter %>
 </p>
- 
+
 <p>
   <strong>Comment:</strong>
   <%= comment.body %>
 </p>
 ```
+
 ### 7.2 Rendering a Partial Form
 
 Let us also move that new comment section out to its own partial.
@@ -118,10 +113,11 @@ Let us also move that new comment section out to its own partial.
     <%= f.submit %>
   </p>
 <% end %>
-
+```
 Then you make the app/views/articles/show.html.erb
  look like the following:
- p>
+```
+<p>
   <strong>Title:</strong>
   <%= @article.title %>
 </p>
@@ -155,24 +151,65 @@ We need to implement a link of some sort in the view and
 <strong>Add a destroy action to</strong>
 <br>
  our controller (app/controllers/comments_controller.rb):
- <pre>
+ ```
  def destroy
     @article = Article.find(params[:article_id])
     @comment = @article.comments.find(params[:id])
     @comment.destroy
     redirect_to article_path(@article)
   end
- </pre>
+ ```
  ## 8.1 Deleting Associated Objects
  If you delete an article, its associated comments will
   also need to be deleted, otherwise they would simply
    occupy space in the database.
-    Rails allows you to use the dependent option of an
+   Rails allows you to use the dependent option of an
      association to achieve this. Modify the Article model,
  <code> app/models/article.rb</code>, as follows:
- <pre>
+ ```
  class Article < ActiveRecord::Base
    has_many :<strong>comments</strong>, dependent: <strong>:destroy</strong>
    validates :title, presence: true,
                     length: { minimum: 5 }
- end</pre>
+ end
+ ```
+## 9 Security
+### 9.1 Basic Authentication
+If you were to publish your blog online, anyone
+ would be able to add, edit and delete articles or delete comments.
+
+Rails provides a very simple HTTP authentication system that will
+ work nicely in this situation.
+
+In the ArticlesController we need to have a way to block access
+ to the various actions if the person is not authenticated.
+ Here we can use the Rails http_basic_authenticate_with method,
+ which allows access to the requested action if that method allows it.
+
+To use the authentication system, we specify it at the top of our
+ ArticlesController in <code>app/controllers/articles_controller.rb.</code>
+ We want the user to be authenticated on every action 
+ except index:
+ ```
+ class ArticlesController < ApplicationController
+ 
+  http_basic_authenticate_with name: "dhh", password: "secret", except: [:index, :show]
+ 
+  def index
+    @articles = Article.all
+  end
+ 
+ ```
+ We also want to allow only authenticated users to delete comments,
+  so in the CommentsController
+  (<code>app/controllers/comments_controller.rb</code>) we write:
+```
+class CommentsController < ApplicationController
+ 
+  http_basic_authenticate_with name: "dhh", password: "secret", only: :destroy
+ 
+  def create
+    @article = Article.find(params[:article_id])
+    # ...
+  end
+```
