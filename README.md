@@ -152,6 +152,27 @@ We need to implement a link of some sort in the view and
                data: { confirm: 'Are you sure?' } %>
 </p>
 ```
-Add a destroy action to
+<strong>Add a destroy action to</strong>
+<br>
  our controller (app/controllers/comments_controller.rb):
- 
+ <pre>
+ def destroy
+    @article = Article.find(params[:article_id])
+    @comment = @article.comments.find(params[:id])
+    @comment.destroy
+    redirect_to article_path(@article)
+  end
+ </pre>
+ ## 8.1 Deleting Associated Objects
+ If you delete an article, its associated comments will
+  also need to be deleted, otherwise they would simply
+   occupy space in the database.
+    Rails allows you to use the dependent option of an
+     association to achieve this. Modify the Article model,
+ <code> app/models/article.rb</code>, as follows:
+ <pre>
+ class Article < ActiveRecord::Base
+   has_many :<strong>comments</strong>, dependent: <strong>:destroy</strong>
+   validates :title, presence: true,
+                    length: { minimum: 5 }
+ end</pre>
