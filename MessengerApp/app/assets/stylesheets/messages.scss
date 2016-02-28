@@ -2,7 +2,17 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-body {margin-left: 10%; margin-right: 10%;}
+body {margin-left: 10%; margin-right: 10%; background-color: gray; }
 div.logo {width: 100px;}
-div.container {width: 400px;}
+div.footer {color: greenyellow;}
+
+h1 {color: greenyellow;}
+div.container {
+    color: blue;
+    background-color: white;
+    margin: auto;
+    width: 60%;
+    border: 3px solid #73AD21;
+    padding: 10px;
+}
 
